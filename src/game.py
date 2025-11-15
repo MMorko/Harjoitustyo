@@ -39,3 +39,6 @@ class Connect4:
                 if all(self.board[r - i][c + i] == piece for i in range(4)):
                     return True
         return False
+    
+    def get_board(self):
+        return self.board
