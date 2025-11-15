@@ -13,7 +13,7 @@ class Connect4AI:
         for col in range(game.columns):
             if game.board[0][col] == "_":
                 game_copy = Connect4()
-                game_copy.board = [row[:] for row in game.get_board()]
+                game_copy.board = [row[:] for row in game.board]
                 game_copy.drop_piece(col, self.piece)
                 score = self.evaluate_board(game_copy, self.piece)
 
@@ -22,7 +22,7 @@ class Connect4AI:
                     best_col = [col]
                 elif score == best_score:
                     best_col.append(col)
-                    
+
         return random.choice(best_col)
     
     def best_move(self, game):
@@ -77,7 +77,7 @@ class Connect4AI:
             score += 10
 
         if count_opp == 3 and count_empty == 1:
-            score -= 50
+            score -= 10000
         elif count_opp == 2 and count_empty == 2:
             score -= 10
             
