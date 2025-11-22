@@ -3,14 +3,17 @@ import random
 from game import Connect4
 
 class Connect4AI:
-    def __init__(self, piece):
+    def __init__(self, piece, depth):
         self.piece = piece
+        self.depth = depth
 
-    def minimax(self, game):
+    def minimax(self, game, depth, maximing_player, alpha, beta):
         best_score = -math.inf
         best_col = []
 
         for col in range(game.columns):
+            if alpha >= beta:
+                break
             if game.board[0][col] == "_":
                 game_copy = Connect4()
                 game_copy.board = [row[:] for row in game.board]
@@ -26,6 +29,14 @@ class Connect4AI:
         return random.choice(best_col)
     
     def best_move(self, game):
+        for col in range(game.columns):
+            if game.board[0][col] == "_":
+                game_copy = Connect4
+                game_copy.board = [row[:] for row in game.board]
+                game_copy.drop_piece(col, self.piece)
+                if game_copy.check_win(self.piece):
+                    return col
+                
         move = self.minimax(game)
         return move
         
