@@ -6,6 +6,7 @@ class Connect4AI:
     def __init__(self, piece, depth):
         self.piece = piece
         self.depth = depth
+        self.opponent = "O" if piece == "X" else "X"
 
     def minimax(self, game, depth, maximing_player, alpha, beta):
         best_score = -math.inf
@@ -36,6 +37,15 @@ class Connect4AI:
                 game_copy.drop_piece(col, self.piece)
                 if game_copy.check_win(self.piece):
                     return col
+                
+        for col in range(game.columns):
+            if game.board[0][col] == "_":
+                game_copy = Connect4
+                game_copy.board = [row[:] for row in game.board]
+                game_copy.drop_piece(col, self.opponent)
+                if game_copy.check_win(self.opponent):
+                    return col
+
                 
         move = self.minimax(game)
         return move
