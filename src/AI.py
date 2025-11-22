@@ -8,46 +8,87 @@ class Connect4AI:
         self.depth = depth
         self.opponent = "O" if piece == "X" else "X"
 
-    def minimax(self, game, depth, maximing_player, alpha, beta):
-        best_score = -math.inf
+    def minimax(self, game, depth, maximizing, alpha, beta):
         best_col = []
+        valid_moves = game.get_valid_moves()
 
-        for col in range(game.columns):
-            if alpha >= beta:
-                break
-            if game.board[0][col] == "_":
+        if game.is_full():
+            return 0, None
+        if depth == 0:
+            return self.evaluate_board(game, self.piece), None
+        if game.four_in_a_row(self.piece):
+            return 100000, None
+        if game.four_in_a_row(self.opponent):
+            return -100000, None
+
+        if maximizing:
+            best_score = -math.inf
+            for col in valid_moves:
                 game_copy = Connect4()
                 game_copy.board = [row[:] for row in game.board]
                 game_copy.drop_piece(col, self.piece)
-                score = self.evaluate_board(game_copy, self.piece)
+                score, _ = self.minimax(game_copy, depth - 1, False, alpha, beta)
 
                 if score > best_score:
                     best_score = score
                     best_col = [col]
+
                 elif score == best_score:
                     best_col.append(col)
 
-        return random.choice(best_col)
+                alpha = max(alpha, best_score)
+                if beta <= alpha:
+                    break
+
+            return best_score, random.choice(best_col)
+        
+        else:
+            best_score = math.inf
+            
+            for col in valid_moves:
+                game_copy = Connect4()
+                game_copy.board = [row[:] for row in game.board]
+                game_copy.drop_piece(col, self.opponent)
+                score, _ = self.minimax(game_copy, depth - 1, True, alpha, beta)
+
+                if score < best_score:
+                    best_score = score
+                    best_col = [col]
+
+                elif score == best_score:
+                    best_col.append(col)
+
+                beta = min(beta, best_score)
+                if beta <= alpha:
+                    break
+
+            return best_score, random.choice(best_col)
     
     def best_move(self, game):
         for col in range(game.columns):
             if game.board[0][col] == "_":
-                game_copy = Connect4
+                game_copy = Connect4()
                 game_copy.board = [row[:] for row in game.board]
                 game_copy.drop_piece(col, self.piece)
-                if game_copy.check_win(self.piece):
+                if game_copy.four_in_a_row(self.piece):
                     return col
                 
         for col in range(game.columns):
             if game.board[0][col] == "_":
-                game_copy = Connect4
+                game_copy = Connect4()
                 game_copy.board = [row[:] for row in game.board]
                 game_copy.drop_piece(col, self.opponent)
-                if game_copy.check_win(self.opponent):
+                if game_copy.four_in_a_row(self.opponent):
                     return col
 
-                
-        move = self.minimax(game)
+        
+        score, move = self.minimax(
+            game,
+            self.depth,
+            True,
+            -math.inf,
+            math.inf
+            )
         return move
         
     def evaluate_board(self, game, piece):
@@ -83,11 +124,10 @@ class Connect4AI:
         return score
     
     def evaluate_window(self, window, piece):
-        opp_piece = "O" if piece == "X" else "X"
         score = 0
 
         count_own = window.count(piece)
-        count_opp = window.count(opp_piece)
+        count_opp = window.count(self.opponent)
         count_empty = window.count("_")
 
         if count_own == 4:

@@ -42,3 +42,10 @@ class Connect4:
     
     def get_board(self):
         return self.board
+    
+    def get_valid_moves(self):
+        valid_moves = []
+        for col in range(self.columns):
+            if self.board[0][col] == "_":
+                valid_moves.append(col)
+        return valid_moves
