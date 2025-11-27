@@ -5,7 +5,7 @@ def game_loop():
     game = Connect4()
     player_piece = input("Choose X or O: ").upper()
     ai_piece = "O" if player_piece == "X" else "X"
-    ai_player = Connect4AI(ai_piece, depth=6)
+    ai_player = Connect4AI(ai_piece, depth=8)
     current_player = ai_piece if ai_piece == "X" else player_piece
 
     while True:

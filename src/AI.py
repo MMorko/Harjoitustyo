@@ -1,96 +1,118 @@
 import math
 import random
+import time
 from game import Connect4
+
 
 class Connect4AI:
     def __init__(self, piece, depth):
         self.piece = piece
         self.depth = depth
         self.opponent = "O" if piece == "X" else "X"
+        self.memory = {}
+        self.time_limit_seconds = 4
+        self._start_time = None
 
     def minimax(self, game, depth, maximizing, alpha, beta):
-        best_col = []
-        valid_moves = game.get_valid_moves()
+        if self._start_time is not None and (time.time() - self._start_time) > self.time_limit_seconds:
+            return self.evaluate_board(game, self.piece), None
 
-        if game.is_full():
-            return 0, None
+        board_key = tuple(tuple(row) for row in game.board)
+        memory_key = (board_key, depth, maximizing)
+        if memory_key in self.memory:
+            return self.memory[memory_key]
+
         if depth == 0:
             return self.evaluate_board(game, self.piece), None
         if game.four_in_a_row(self.piece):
-            return 100000, None
+            return 100000 + depth, None
         if game.four_in_a_row(self.opponent):
-            return -100000, None
+            return -100000 - depth, None
+        if game.is_full():
+            return 0, None
 
+        valid_moves = game.get_valid_moves()
         if maximizing:
-            best_score = -math.inf
+            best_score = -100000
+            best_col = None
+
             for col in valid_moves:
-                game_copy = Connect4()
-                game_copy.board = [row[:] for row in game.board]
-                game_copy.drop_piece(col, self.piece)
-                score, _ = self.minimax(game_copy, depth - 1, False, alpha, beta)
+                row = game.drop_piece(col, self.piece)
+                if row == -1:
+                    continue
+
+                if self._start_time is not None and (time.time() - self._start_time) > self.time_limit_seconds:
+                    game.remove_piece(row, col)
+                    return self.evaluate_board(game, self.piece), None
+
+                score, _ = self.minimax(game, depth - 1, False, alpha, beta)
+                game.remove_piece(row, col)
 
                 if score > best_score:
                     best_score = score
-                    best_col = [col]
-
-                elif score == best_score:
-                    best_col.append(col)
+                    best_col = col
 
                 alpha = max(alpha, best_score)
                 if beta <= alpha:
                     break
 
-            return best_score, random.choice(best_col)
-        
+            self.memory[memory_key] = (best_score, best_col)
+            return best_score, best_col
+
         else:
-            best_score = math.inf
-            
+            best_score = 100000
+            best_col = None
+
             for col in valid_moves:
-                game_copy = Connect4()
-                game_copy.board = [row[:] for row in game.board]
-                game_copy.drop_piece(col, self.opponent)
-                score, _ = self.minimax(game_copy, depth - 1, True, alpha, beta)
+                row = game.drop_piece(col, self.opponent)
+                if row == -1:
+                    continue
+
+                if self._start_time is not None and (time.time() - self._start_time) > self.time_limit_seconds:
+                    game.remove_piece(row, col)
+                    return self.evaluate_board(game, self.piece), None
+
+                score, _ = self.minimax(game, depth - 1, True, alpha, beta)
+                game.remove_piece(row, col)
 
                 if score < best_score:
                     best_score = score
-                    best_col = [col]
-
-                elif score == best_score:
-                    best_col.append(col)
+                    best_col = col
 
                 beta = min(beta, best_score)
                 if beta <= alpha:
                     break
 
-            return best_score, random.choice(best_col)
-    
-    def best_move(self, game):
-        for col in range(game.columns):
-            if game.board[0][col] == "_":
-                game_copy = Connect4()
-                game_copy.board = [row[:] for row in game.board]
-                game_copy.drop_piece(col, self.piece)
-                if game_copy.four_in_a_row(self.piece):
-                    return col
-                
-        for col in range(game.columns):
-            if game.board[0][col] == "_":
-                game_copy = Connect4()
-                game_copy.board = [row[:] for row in game.board]
-                game_copy.drop_piece(col, self.opponent)
-                if game_copy.four_in_a_row(self.opponent):
-                    return col
+            self.memory[memory_key] = (best_score, best_col)
+            return best_score, best_col
 
-        
-        score, move = self.minimax(
-            game,
-            self.depth,
-            True,
-            -math.inf,
-            math.inf
-            )
+    def best_move(self, game):
+        self._start_time = time.time()
+        self.memory.clear()
+
+        for col in game.get_valid_moves():
+            row = game.drop_piece(col, self.piece)
+            if row != -1:
+                if game.four_in_a_row(self.piece):
+                    game.remove_piece(row, col)
+                    return col
+                game.remove_piece(row, col)
+
+        for col in game.get_valid_moves():
+            row = game.drop_piece(col, self.opponent)
+            if row != -1:
+                if game.four_in_a_row(self.opponent):
+                    game.remove_piece(row, col)
+                    return col
+                game.remove_piece(row, col)
+
+        _, move = self.minimax(game, self.depth, True, -100000, 100000)
+
+        if move is None:
+            valid = game.get_valid_moves()
+            return valid[0] if valid else None
         return move
-        
+
     def evaluate_board(self, game, piece):
         score = 0
         score += self.count_windows(game.get_board(), piece)
@@ -122,24 +144,24 @@ class Connect4AI:
                 score += self.evaluate_window(window, piece)
 
         return score
-    
+
     def evaluate_window(self, window, piece):
         score = 0
 
         count_own = window.count(piece)
-        count_opp = window.count(self.opponent)
         count_empty = window.count("_")
 
-        if count_own == 4:
-            score += 100000
-        elif count_own == 3 and count_empty == 1:
-            score += 30
+        if count_own == 3 and count_empty == 1:
+            score += 1000
         elif count_own == 2 and count_empty == 2:
-            score += 10
+            score += 20
+        elif count_own == 1 and count_empty == 3:
+            score += 1
+        elif count_own == 0 and count_empty == 1:
+            score -= 1000
+        elif count_own == 0 and count_empty == 2:
+            score -= 25
+        elif count_own == 0 and count_empty == 1:
+            score -=1
 
-        if count_opp == 3 and count_empty == 1:
-            score -= 10000
-        elif count_opp == 2 and count_empty == 2:
-            score -= 10
-            
         return score

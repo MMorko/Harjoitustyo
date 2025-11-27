@@ -1,4 +1,4 @@
-class Connect4:
+﻿class Connect4:
     def __init__(self):
         self.rows = 6
         self.columns = 7
@@ -8,15 +8,18 @@ class Connect4:
         for row in reversed(range(self.rows)):
             if self.board[row][column] == "_":
                 self.board[row][column] = piece
-                return True
-        return False
+                return row
+        return -1
+
+    def remove_piece(self, row, column):
+        self.board[row][column] = "_"
 
     def is_full(self):
         for col in range(self.columns):
             if self.board[0][col] == "_":
                 return False
         return True
-    
+
     def print_board(self):
         for row in self.board:
             print(" ".join(row))
@@ -39,13 +42,14 @@ class Connect4:
                 if all(self.board[r - i][c + i] == piece for i in range(4)):
                     return True
         return False
-    
+
     def get_board(self):
         return self.board
-    
+
     def get_valid_moves(self):
+        order = [3, 4, 2, 5, 1, 6, 0]
         valid_moves = []
-        for col in range(self.columns):
+        for col in order:
             if self.board[0][col] == "_":
                 valid_moves.append(col)
         return valid_moves
