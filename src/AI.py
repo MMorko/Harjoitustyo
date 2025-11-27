@@ -126,7 +126,7 @@ class Connect4AI:
         for row in range(rows):
             for col in range(columns - 3):
                 window = [board[row][col + i] for i in range(4)]
-                score += self.evaluate_window(window, piece)
+                score += self.evaluate_window(window, piece)    
 
         for col in range(columns):
             for row in range(rows - 3):
