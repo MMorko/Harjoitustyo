@@ -5,12 +5,12 @@ from game import Connect4
 
 
 class Connect4AI:
-    def __init__(self, piece, depth):
+    def __init__(self, piece, depth, time_limit_seconds=4):
         self.piece = piece
         self.depth = depth
         self.opponent = "O" if piece == "X" else "X"
         self.memory = {}
-        self.time_limit_seconds = 4
+        self.time_limit_seconds = time_limit_seconds
         self._start_time = None
 
     def minimax(self, game, depth, maximizing, alpha, beta):
@@ -18,9 +18,6 @@ class Connect4AI:
             return self.evaluate_board(game, self.piece), None
 
         board_key = tuple(tuple(row) for row in game.board)
-        memory_key = (board_key, depth, maximizing)
-        if memory_key in self.memory:
-            return self.memory[memory_key]
 
         if depth == 0:
             return self.evaluate_board(game, self.piece), None
@@ -32,6 +29,13 @@ class Connect4AI:
             return 0, None
 
         valid_moves = game.get_valid_moves()
+
+        memory_key = (board_key, maximizing)
+        previous_best = self.memory.get(memory_key)
+        if previous_best is valid_moves:
+            valid_moves.remove(previous_best)
+            valid_moves.insert(0, previous_best)
+
         if maximizing:
             best_score = -100000
             best_col = None
@@ -56,7 +60,7 @@ class Connect4AI:
                 if beta <= alpha:
                     break
 
-            self.memory[memory_key] = (best_score, best_col)
+            self.memory[memory_key] = best_col
             return best_score, best_col
 
         else:
@@ -83,12 +87,11 @@ class Connect4AI:
                 if beta <= alpha:
                     break
 
-            self.memory[memory_key] = (best_score, best_col)
+            self.memory[memory_key] = best_col
             return best_score, best_col
 
     def best_move(self, game):
         self._start_time = time.time()
-        self.memory.clear()
 
         for col in game.get_valid_moves():
             row = game.drop_piece(col, self.piece)
@@ -115,19 +118,15 @@ class Connect4AI:
 
     def evaluate_board(self, game, piece):
         score = 0
-        score += self.count_windows(game.get_board(), piece)
-        return score 
-    
-    def count_windows(self, board, piece):
-        score = 0
+        board = game.get_board()
         rows = len(board)
         columns = len(board[0])
-
+        
         for row in range(rows):
             for col in range(columns - 3):
                 window = [board[row][col + i] for i in range(4)]
-                score += self.evaluate_window(window, piece)    
-
+                score += self.evaluate_window(window, piece) 
+        
         for col in range(columns):
             for row in range(rows - 3):
                 window = [board[row + i][col] for i in range(4)]
@@ -142,8 +141,8 @@ class Connect4AI:
             for col in range(columns - 3):
                 window = [board[row - i][col + i] for i in range(4)]
                 score += self.evaluate_window(window, piece)
-
-        return score
+        
+        return score 
 
     def evaluate_window(self, window, piece):
         score = 0
