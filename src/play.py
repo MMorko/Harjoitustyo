@@ -4,8 +4,10 @@ from AI import Connect4AI
 def game_loop():
     game = Connect4()
     player_piece = input("Choose X or O: ").upper()
+    ai_depth = int(input("Choose AI depth: "))
+    ai_time_limit = int(input("Choose AI time limit (seconds): "))
     ai_piece = "O" if player_piece == "X" else "X"
-    ai_player = Connect4AI(ai_piece, depth=8)
+    ai_player = Connect4AI(ai_piece, depth=ai_depth, time_limit_seconds=ai_time_limit)
     current_player = ai_piece if ai_piece == "X" else player_piece
 
     while True:
