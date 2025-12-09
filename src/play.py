@@ -15,21 +15,25 @@ def game_loop():
         game.print_board()
         if current_player == ai_piece:
             column = ai_player.best_move(game)
-            game.drop_piece(column, ai_piece)
+            row = game.drop_piece(column, ai_piece)
+            last_move = (row, column)
             print(f"AI chooses column {column + 1}")
 
         else:
             column = int(input("Player: Enter column (1-7): "))
-            if not game.drop_piece(column - 1, current_player):
-                print("Column full")
+            if column - 1 not in game.get_valid_moves():
+                print("Invalid move. Try again.")
                 continue
+            else:
+                row = game.drop_piece(column - 1, player_piece)
+                last_move = (row, column - 1)
 
         if game.is_full():
             game.print_board()
             print("Game over: No winner")
             break
         
-        if game.four_in_a_row(current_player):
+        if game.four_in_a_row(current_player, last_move):
             game.print_board()
             print(f"Player {current_player} wins")
             break

@@ -24,52 +24,49 @@
         for row in self.board:
             print(" ".join(row))
 
-    def four_in_a_row(self, piece, last_move=None):
-        """
-        If last_move is None, scan the whole board (backwards-compatible).
-        If last_move is (row, col), only check lines passing through that cell.
-        """
+    def four_in_a_row(self, piece, last_move = None):
         if last_move is None:
-            for r in range(self.rows):
-                for c in range(self.columns - 3):
-                    if all(self.board[r][c + i] == piece for i in range(4)):
+            for row in range(self.rows):
+                for col in range(self.columns - 3):
+                    if all(self.board[row][col + i] == piece for i in range(4)):
                         return True
-            for c in range(self.columns):
-                for r in range(self.rows - 3):
-                    if all(self.board[r + i][c] == piece for i in range(4)):
+            for col in range(self.columns):
+                for row in range(self.rows - 3):
+                    if all(self.board[row + i][col] == piece for i in range(4)):
                         return True
-            for r in range(self.rows - 3):
-                for c in range(self.columns - 3):
-                    if all(self.board[r + i][c + i] == piece for i in range(4)):
+            for row in range(self.rows - 3):
+                for col in range(self.columns - 3):
+                    if all(self.board[row + i][col + i] == piece for i in range(4)):
                         return True
-            for r in range(3, self.rows):
-                for c in range(self.columns - 3):
-                    if all(self.board[r - i][c + i] == piece for i in range(4)):
+            for row in range(3, self.rows):
+                for col in range(self.columns - 3):
+                    if all(self.board[row - i][col + i] == piece for i in range(4)):
                         return True
             return False
-
-        # Efficient check around last_move
-        r0, c0 = last_move
-        # directions: (dr, dc)
+        
+        row, col = last_move
         directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
+
         for dr, dc in directions:
             count = 1
-            # check positive direction
-            r, c = r0 + dr, c0 + dc
+
+            r, c = row + dr, col + dc
             while 0 <= r < self.rows and 0 <= c < self.columns and self.board[r][c] == piece:
                 count += 1
                 r += dr
                 c += dc
-            # check negative direction
-            r, c = r0 - dr, c0 - dc
+
+            r, c = row - dr, col - dc
             while 0 <= r < self.rows and 0 <= c < self.columns and self.board[r][c] == piece:
                 count += 1
                 r -= dr
                 c -= dc
+
             if count >= 4:
                 return True
+            
         return False
-
+    
     def get_board(self):
         return self.board
 

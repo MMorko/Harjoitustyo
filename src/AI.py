@@ -1,5 +1,3 @@
-import math
-import random
 import time
 from game import Connect4
 
@@ -17,22 +15,23 @@ class Connect4AI:
         if self._start_time and (time.time() - self._start_time) > self.time_limit_seconds:
             return None, None
 
-        board_key = tuple(tuple(row) for row in game.board)
-
-        if maximizing:
-            if game.four_in_a_row(self.opponent):
+        if game.four_in_a_row(self.opponent):
                 return -100000 - depth, None
-        else:
-            if game.four_in_a_row(self.piece):
+        if game.four_in_a_row(self.piece):
                 return 100000 + depth, None
         if game.is_full():
             return 0, None
         if depth == 0:
             return self.evaluate_board(game, self.piece), None
 
+        board_key = tuple(tuple(row) for row in game.board)
         valid_moves = game.get_valid_moves()
 
         memory_key = (board_key, maximizing)
+        best_colm = self.memory.get(memory_key)
+        if best_colm in valid_moves:
+            valid_moves.remove(best_colm)
+            valid_moves.insert(0, best_colm)
 
         if maximizing:
             best_score = -100000
@@ -87,12 +86,13 @@ class Connect4AI:
             return best_score, best_col
 
     def best_move(self, game):
+        self.memory = {}
         self._start_time = time.time()
 
         for col in game.get_valid_moves():
             row = game.drop_piece(col, self.piece)
             if row != -1:
-                if game.four_in_a_row(self.piece):
+                if game.four_in_a_row(self.piece, last_move=(row, col)):
                     game.remove_piece(row, col)
                     return col
                 game.remove_piece(row, col)
@@ -100,7 +100,7 @@ class Connect4AI:
         for col in game.get_valid_moves():
             row = game.drop_piece(col, self.opponent)
             if row != -1:
-                if game.four_in_a_row(self.opponent):
+                if game.four_in_a_row(self.opponent, last_move=(row, col)):
                     game.remove_piece(row, col)
                     return col
                 game.remove_piece(row, col)
@@ -108,7 +108,7 @@ class Connect4AI:
         best_move = None
 
         for depth in range(1, self.depth + 1):
-            score, move = self.minimax(game, depth, True, -100000, 100000)
+            _, move = self.minimax(game, depth, True, -100000, 100000)
             if move is not None:
                 best_move = move
             else:
