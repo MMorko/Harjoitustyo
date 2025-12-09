@@ -14,27 +14,25 @@ class Connect4AI:
         self._start_time = None
 
     def minimax(self, game, depth, maximizing, alpha, beta):
-        if self._start_time is not None and (time.time() - self._start_time) > self.time_limit_seconds:
-            return self.evaluate_board(game, self.piece), None
+        if self._start_time and (time.time() - self._start_time) > self.time_limit_seconds:
+            return None, None
 
         board_key = tuple(tuple(row) for row in game.board)
 
-        if depth == 0:
-            return self.evaluate_board(game, self.piece), None
-        if game.four_in_a_row(self.piece):
-            return 100000 + depth, None
-        if game.four_in_a_row(self.opponent):
-            return -100000 - depth, None
+        if maximizing:
+            if game.four_in_a_row(self.opponent):
+                return -100000 - depth, None
+        else:
+            if game.four_in_a_row(self.piece):
+                return 100000 + depth, None
         if game.is_full():
             return 0, None
+        if depth == 0:
+            return self.evaluate_board(game, self.piece), None
 
         valid_moves = game.get_valid_moves()
 
         memory_key = (board_key, maximizing)
-        previous_best = self.memory.get(memory_key)
-        if previous_best is valid_moves:
-            valid_moves.remove(previous_best)
-            valid_moves.insert(0, previous_best)
 
         if maximizing:
             best_score = -100000
@@ -45,12 +43,11 @@ class Connect4AI:
                 if row == -1:
                     continue
 
-                if self._start_time is not None and (time.time() - self._start_time) > self.time_limit_seconds:
-                    game.remove_piece(row, col)
-                    return self.evaluate_board(game, self.piece), None
-
                 score, _ = self.minimax(game, depth - 1, False, alpha, beta)
                 game.remove_piece(row, col)
+
+                if score is None:
+                    return None, None
 
                 if score > best_score:
                     best_score = score
@@ -72,12 +69,11 @@ class Connect4AI:
                 if row == -1:
                     continue
 
-                if self._start_time is not None and (time.time() - self._start_time) > self.time_limit_seconds:
-                    game.remove_piece(row, col)
-                    return self.evaluate_board(game, self.piece), None
-
                 score, _ = self.minimax(game, depth - 1, True, alpha, beta)
                 game.remove_piece(row, col)
+
+                if score is None:
+                    return None, None
 
                 if score < best_score:
                     best_score = score
@@ -109,12 +105,16 @@ class Connect4AI:
                     return col
                 game.remove_piece(row, col)
 
-        _, move = self.minimax(game, self.depth, True, -100000, 100000)
+        best_move = None
 
-        if move is None:
-            valid = game.get_valid_moves()
-            return valid[0] if valid else None
-        return move
+        for depth in range(1, self.depth + 1):
+            score, move = self.minimax(game, depth, True, -100000, 100000)
+            if move is not None:
+                best_move = move
+            else:
+                break
+
+        return best_move
 
     def evaluate_board(self, game, piece):
         score = 0
