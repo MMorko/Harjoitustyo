@@ -2,6 +2,10 @@ from game import Connect4
 from AI import Connect4AI
 
 def game_loop():
+    """
+    Game loop for Connect4 with AI opponent.
+    """
+
     game = Connect4()
     player_piece = input("Choose X or O: ").upper()
     ai_depth = int(input("Choose AI depth: "))

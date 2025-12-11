@@ -1,8 +1,9 @@
 import time
-from game import Connect4
-
 
 class Connect4AI:
+    """
+    Connect4 AI player using Minimax with alpha-beta pruning and time constraints.
+    """
     def __init__(self, piece, depth, time_limit_seconds=4):
         self.piece = piece
         self.depth = depth
@@ -12,6 +13,17 @@ class Connect4AI:
         self._start_time = None
 
     def minimax(self, game, depth, maximizing, alpha, beta):
+        """
+        Minimax algorithm with alpha-beta pruning and time limit.
+        
+        :param game: Current game state
+        :param depth: Current depth in the game tree
+        :param maximizing: True/false indicating if maximizing or not
+        :param alpha: Alpha value for alpha-beta pruning
+        :param beta: Beta value for alpha-beta pruning
+
+        Returns a tuple score, column where score is the evaluated score and column is the best move.
+        """
         if self._start_time and (time.time() - self._start_time) > self.time_limit_seconds:
             return None, None
 
@@ -86,6 +98,13 @@ class Connect4AI:
             return best_score, best_col
 
     def best_move(self, game):
+        """
+        Method for calling minimax and getting the best move.
+
+        :param game: Current game state
+
+        Returns the best move.
+        """
         self.memory = {}
         self._start_time = time.time()
 
@@ -117,6 +136,14 @@ class Connect4AI:
         return best_move
 
     def evaluate_board(self, game, piece):
+        """
+        Docstring for evaluate_board
+        
+        :param game: Current game state
+        :param piece: Piece to evaluate for
+
+        Returns the evaluated score of the board.
+        """
         score = 0
         board = game.get_board()
         rows = len(board)
@@ -145,6 +172,14 @@ class Connect4AI:
         return score 
 
     def evaluate_window(self, window, piece):
+        """
+        Evaluates a window of four cells.
+
+        :param window: List of four cells
+        :param piece: Piece to evaluate for
+
+        Returns the score of the window.
+        """
         score = 0
 
         count_own = window.count(piece)
