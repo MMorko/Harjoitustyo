@@ -22,15 +22,16 @@ class Connect4AI:
         :param alpha: Alpha value for alpha-beta pruning
         :param beta: Beta value for alpha-beta pruning
 
-        Returns a tuple score, column where score is the evaluated score and column is the best move.
+        Returns a tuple score, column where score is the evaluated score
+        and column is the best move.
         """
         if self._start_time and (time.time() - self._start_time) > self.time_limit_seconds:
             return None, None
 
         if game.four_in_a_row(self.opponent):
-                return -100000 - depth, None
+            return -100000 - depth, None
         if game.four_in_a_row(self.piece):
-                return 100000 + depth, None
+            return 100000 + depth, None
         if game.is_full():
             return 0, None
         if depth == 0:
@@ -148,12 +149,12 @@ class Connect4AI:
         board = game.get_board()
         rows = len(board)
         columns = len(board[0])
-        
+
         for row in range(rows):
             for col in range(columns - 3):
                 window = [board[row][col + i] for i in range(4)]
                 score += self.evaluate_window(window, piece) 
-        
+
         for col in range(columns):
             for row in range(rows - 3):
                 window = [board[row + i][col] for i in range(4)]
@@ -168,8 +169,8 @@ class Connect4AI:
             for col in range(columns - 3):
                 window = [board[row - i][col + i] for i in range(4)]
                 score += self.evaluate_window(window, piece)
-        
-        return score 
+
+        return score
 
     def evaluate_window(self, window, piece):
         """
