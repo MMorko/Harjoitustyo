@@ -111,19 +111,17 @@ class Connect4AI:
 
         for col in game.get_valid_moves():
             row = game.drop_piece(col, self.piece)
-            if row != -1:
-                if game.four_in_a_row(self.piece, last_move=(row, col)):
-                    game.remove_piece(row, col)
-                    return col
+            if game.four_in_a_row(self.piece, last_move=(row, col)):
                 game.remove_piece(row, col)
+                return col
+            game.remove_piece(row, col)
 
         for col in game.get_valid_moves():
             row = game.drop_piece(col, self.opponent)
-            if row != -1:
-                if game.four_in_a_row(self.opponent, last_move=(row, col)):
-                    game.remove_piece(row, col)
-                    return col
+            if game.four_in_a_row(self.opponent, last_move=(row, col)):
                 game.remove_piece(row, col)
+                return col
+            game.remove_piece(row, col)
 
         best_move = None
 
@@ -138,7 +136,7 @@ class Connect4AI:
 
     def evaluate_board(self, game, piece):
         """
-        Docstring for evaluate_board
+        Evaluates the board for the given piece.
         
         :param game: Current game state
         :param piece: Piece to evaluate for
@@ -153,7 +151,7 @@ class Connect4AI:
         for row in range(rows):
             for col in range(columns - 3):
                 window = [board[row][col + i] for i in range(4)]
-                score += self.evaluate_window(window, piece) 
+                score += self.evaluate_window(window, piece)
 
         for col in range(columns):
             for row in range(rows - 3):
@@ -196,7 +194,6 @@ class Connect4AI:
             score -= 1000
         elif count_own == 0 and count_empty == 2:
             score -= 25
-        elif count_own == 0 and count_empty == 1:
+        elif count_own == 0 and count_empty == 3:
             score -=1
-
         return score
