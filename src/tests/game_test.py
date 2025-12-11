@@ -29,7 +29,7 @@ class TestConnect4(unittest.TestCase):
         """
         for _ in range(self.game.rows):
             self.game.drop_piece(0, "X")
-        self.assertFalse(self.game.drop_piece(0, "O"))
+        self.assertEqual(-1, self.game.drop_piece(0, "O"))
 
     def test_is_full(self):
         """
@@ -95,7 +95,7 @@ class TestConnect4(unittest.TestCase):
 
     def test_no_win(self):
         """
-        Test for no wins.
+        Test for no win.
         """
         self.game.drop_piece(0, "X")
         self.game.drop_piece(1, "O")
@@ -103,3 +103,25 @@ class TestConnect4(unittest.TestCase):
         self.game.drop_piece(3, "O")
         self.assertFalse(self.game.four_in_a_row("X"))
         self.assertFalse(self.game.four_in_a_row("O"))
+
+    def test_get_valid_moves(self):
+        """
+        Test for getting valid moves.
+        """
+        valid_moves = self.game.get_valid_moves()
+        self.assertEqual(len(valid_moves), 7)
+
+        for _ in range(self.game.rows):
+            self.game.drop_piece(0, "X")
+
+        valid_moves = self.game.get_valid_moves()
+        self.assertEqual(len(valid_moves), 6)
+
+    def test_last_move_win_detection(self):
+        """
+        Test for win detection using last_move parameter.
+        """
+        for col in range(3):
+            self.game.drop_piece(col, "X")
+        row = self.game.drop_piece(3, "X")
+        self.assertTrue(self.game.four_in_a_row("X", last_move=(row, 3)))
