@@ -25,15 +25,15 @@ Tämän hetkinen coverage on: 100%
 
 ---
 
-Minimax tekoälyn testit:
-Connect4AI_test.py testaa, että minimax ja sen käyttäminen metodien logiikka on oikeaa ja toimivaa
-Testeihin kuuluu:
--Tekoäly löytää välittömät voitot (1 siirto depth=0) itselleen ja vastustajalle ja suosii omaa voittoa
--Evaluate window toimii oikein ja antaa oikean arvon 4 nappulan ikkunoille (kaikki yhdistelmät)
--Neljä eri tapausta, jotka testaavat evaluate_board toimivan oikein ja palauttavan oikean heuristisen arvon
+Minimax tekoälyn testit:  
+Connect4AI_test.py testaa, että minimax ja sen käyttäminen metodien logiikka on oikeaa ja toimivaa  
+Testeihin kuuluu:  
+-Tekoäly löytää välittömät voitot (1 siirto depth=0) itselleen ja vastustajalle ja suosii omaa voittoa  
+-Evaluate window toimii oikein ja antaa oikean arvon 4 nappulan ikkunoille (kaikki yhdistelmät)  
+-Neljä eri tapausta, jotka testaavat evaluate_board toimivan oikein ja palauttavan oikean heuristisen arvon  
 
 Tämän hetkinen coverage on: 49%
 
-Puuttuu:
--Minimax testit
--Best_move testit
+Puuttuu:  
+-Minimax testit  
+-Best_move testit  
