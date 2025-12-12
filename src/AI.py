@@ -28,21 +28,24 @@ class Connect4AI:
         if self._start_time and (time.time() - self._start_time) > self.time_limit_seconds:
             return None, None
 
-        if game.four_in_a_row(self.opponent):
-            return -100000 - depth, None
-        if game.four_in_a_row(self.piece):
-            return 100000 + depth, None
+        if maximizing:
+            if game.four_in_a_row(self.opponent):
+                return -100000 - depth, None
+        else:
+            if game.four_in_a_row(self.piece):
+                return 100000 + depth, None
         if game.is_full():
             return 0, None
         if depth == 0:
             return self.evaluate_board(game, self.piece), None
 
         board_key = tuple(tuple(row) for row in game.board)
+        #delimiter and join
         valid_moves = game.get_valid_moves()
 
-        memory_key = (board_key, maximizing)
+        memory_key = (board_key)
         best_colm = self.memory.get(memory_key)
-        if best_colm in valid_moves:
+        if best_colm is not None:
             valid_moves.remove(best_colm)
             valid_moves.insert(0, best_colm)
 

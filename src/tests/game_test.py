@@ -108,20 +108,55 @@ class TestConnect4(unittest.TestCase):
         """
         Test for getting valid moves.
         """
-        valid_moves = self.game.get_valid_moves()
-        self.assertEqual(len(valid_moves), 7)
-
         for _ in range(self.game.rows):
             self.game.drop_piece(0, "X")
 
         valid_moves = self.game.get_valid_moves()
-        self.assertEqual(len(valid_moves), 6)
+        self.assertEqual(valid_moves, [3, 4, 2, 5, 1, 6])
 
-    def test_last_move_win_detection(self):
+    def test_last_move_horizontal_win(self):
         """
-        Test for win detection using last_move parameter.
+        Test for last move horizontal win.
         """
         for col in range(3):
             self.game.drop_piece(col, "X")
+
+        row = self.game.drop_piece(3, "X")
+        self.assertTrue(self.game.four_in_a_row("X", last_move=(row, 3)))
+
+    def test_last_move_vertical_win(self):
+        """
+        Test for last movevertical win.
+        """
+        for _ in range(3):
+            self.game.drop_piece(0, "O")
+
+        row = self.game.drop_piece(0, "O")
+        self.assertTrue(self.game.four_in_a_row("O", last_move=(row, 0)))
+
+    def test_last_move_left_diagonal_win(self):
+        """
+        Test for last move left diagonal win.
+        """
+        for col in range(4):
+            for _ in range(col):
+                self.game.drop_piece(col, "X")
+
+        for col in range(3):
+            self.game.drop_piece(col, "O")
+
+        row =  self.game.drop_piece(3, "O")
+        self.assertTrue(self.game.four_in_a_row("O", last_move=(row, 3)))
+
+    def test_last_move_right_diagonal_win(self):
+        """
+        Test for last move right diagonal win.
+        """
+        for col in range(4):
+            for _ in range(3 - col):
+                self.game.drop_piece(col, "O")
+        for col in range(3):
+            self.game.drop_piece(col, "X")
+
         row = self.game.drop_piece(3, "X")
         self.assertTrue(self.game.four_in_a_row("X", last_move=(row, 3)))

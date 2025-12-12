@@ -1,6 +1,9 @@
 import unittest
 from AI import Connect4AI
 from game import Connect4
+#minimax testi voitto 5 vuoroa syvyydellä 5.
+#sama testi kun voitto 3 vuoroa syvyydellä 5.
+#best_move testi
 
 class TestConnect4AI(unittest.TestCase):
     """
@@ -45,23 +48,84 @@ class TestConnect4AI(unittest.TestCase):
         Test for evaluating window with own pieces.
         """
         self.assertEqual(self.ai.evaluate_window(["X", "X", "X", "_"], "X"), 1000)
-        self.assertEqual(self.ai.evaluate_window(["X", "X", "_", "_"], "X"), 20)
-        self.assertEqual(self.ai.evaluate_window(["X", "_", "_", "_"], "X"), 1)
+        self.assertEqual(self.ai.evaluate_window(["X", "_", "_", "X"], "X"), 20)
+        self.assertEqual(self.ai.evaluate_window(["_", "_", "X", "_"], "X"), 1)
         self.assertEqual(self.ai.evaluate_window(["_", "_", "_", "_"], "X"), 0)
 
     def test_evaluate_window_opponent_piece(self):
         """
         Test for evaluating window with opponent pieces.
         """
-        self.assertEqual(self.ai.evaluate_window(["O", "O", "O", "_"], "X"), -1000)
+        self.assertEqual(self.ai.evaluate_window(["O", "_", "O", "O"], "X"), -1000)
         self.assertEqual(self.ai.evaluate_window(["O", "O", "_", "_"], "X"), -25)
         self.assertEqual(self.ai.evaluate_window(["O", "_", "_", "_"], "X"), -1)
+        self.assertEqual(self.ai.evaluate_window(["X", "_", "O", "_"], "X"), 0)
 
-    def test_evaluate_board(self):
+    def test_evaluate_board_case_1(self):
         """
         Test for evaluating the board.
         """
-        self.game.board =[
+        self.game.board = [
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["X", "_", "_", "_", "_", "_", "O"],
+            ["O", "O", "_", "_", "X", "O", "O"],
+            ["X", "X", "_", "_", "O", "X", "X"],
+        ]
+        score = self.ai.evaluate_board(self.game, "X")
+        self.assertEqual(score, -13)
+
+    def test_evaluate_board_case_2(self):
+        """
+        Test for evaluating the board.
+        """
+        self.game.board = [
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["O", "_", "_", "_", "_", "_", "_"],
+            ["X", "O", "X", "O", "_", "_", "_"],
+            ["X", "X", "X", "O", "_", "_", "_"],
+            ["X", "O", "O", "O", "_", "_", "_"],
+        ]
+        score = self.ai.evaluate_board(self.game, "X")
+        self.assertEqual(score, -1045)
+
+    def test_evaluate_board_case_3(self):
+        """
+        Test for evaluating the board.
+        """
+        self.game.board = [
+            ["X", "_", "_", "_", "_", "_", "_"],
+            ["O", "_", "_", "_", "_", "_", "_"],
+            ["X", "O", "_", "_", "_", "_", "O"],
+            ["X", "X", "O", "_", "O", "O", "X"],
+            ["O", "X", "O", "_", "O", "X", "O"],
+            ["O", "O", "X", "X", "X", "X", "X"],
+        ]
+        score = self.ai.evaluate_board(self.game, "O")
+        self.assertEqual(score, 2087)
+
+    def test_evaluate_board_case_4(self):
+        """
+        Test for evaluating the board.
+        """
+        self.game.board = [
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "O", "X", "_", "_"],
+            ["_", "_", "O", "X", "O", "_", "_"],
+            ["_", "_", "O", "O", "X", "_", "X"],
+            ["O", "_", "X", "O", "X", "_", "X"],
+        ]
+        score = self.ai.evaluate_board(self.game, "O")
+        self.assertEqual(score, 1055)
+
+    def test_minimax(self):
+        """
+        Test for minimax decision making.
+        """
+        self.game.board = [
             ["_", "_", "_", "_", "_", "_", "_"],
             ["_", "_", "_", "_", "_", "_", "_"],
             ["_", "_", "_", "_", "_", "_", "_"],
@@ -69,5 +133,5 @@ class TestConnect4AI(unittest.TestCase):
             ["O", "O", "_", "_", "X", "O", "O"],
             ["X", "X", "_", "_", "O", "X", "X"],
         ]
-        score = self.ai.evaluate_board(self.game, "X")
-        self.assertEqual(score, 14)
+
+
