@@ -121,9 +121,40 @@ class TestConnect4AI(unittest.TestCase):
         score = self.ai.evaluate_board(self.game, "O")
         self.assertEqual(score, 1055)
 
-    def test_minimax(self):
+    def test_minimax_5_move_win(self):
         """
-        Test for minimax decision making.
+        Test for minimax decision making win in 5 moves.
+        """
+        self.game.board = [
+            ["_", "_", "O", "X", "_", "O", "_"],
+            ["_", "_", "O", "X", "_", "O", "O"],
+            ["O", "X", "O", "O", "_", "X", "O"],
+            ["X", "O", "X", "X", "_", "O", "X"],
+            ["O", "X", "X", "O", "_", "O", "X"],
+            ["X", "X", "O", "X", "X", "X", "O"],
+        ]
+
+        score, move = self.ai.minimax(self.game, depth=5, maximizing=True, alpha=-100000, beta=100000)
+        self.assertGreater(score, 100000)  # AI should choose column 4 to win in 5 moves
+
+    def test_minimax_3_move_win(self):
+        """
+        Test for minimax decision making win in 3 moves.
+        """
+        self.game.board = [
+            ["_", "_", "O", "X", "_", "O", "_"],
+            ["_", "_", "O", "X", "_", "O", "O"],
+            ["O", "X", "O", "O", "_", "X", "O"],
+            ["X", "O", "X", "X", "_", "O", "X"],
+            ["O", "X", "X", "O", "_", "O", "X"],
+            ["X", "X", "O", "X", "X", "X", "O"],
+        ]
+        score, move = self.ai.minimax(self.game, depth=5, maximizing_player=True, alpha=-100000, beta=100000)
+        self.assertEqual(score, 3)
+
+    def test_best_move(self):
+        """
+        Test for best move selection.
         """
         self.game.board = [
             ["_", "_", "_", "_", "_", "_", "_"],
@@ -133,5 +164,5 @@ class TestConnect4AI(unittest.TestCase):
             ["O", "O", "_", "_", "X", "O", "O"],
             ["X", "X", "_", "_", "O", "X", "X"],
         ]
-
-
+        col = self.ai.best_move(self.game)
+        self.assertEqual(col, 2)  # AI should choose column 2 for the best move
