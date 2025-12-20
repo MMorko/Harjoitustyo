@@ -32,14 +32,14 @@ def game_loop():
                 row = game.drop_piece(column - 1, player_piece)
                 last_move = (row, column - 1)
 
-        if game.is_full():
-            game.print_board()
-            print("Game over: No winner")
-            break
-
         if game.four_in_a_row(current_player, last_move):
             game.print_board()
             print(f"Player {current_player} wins")
+            break
+
+        if game.is_full():
+            game.print_board()
+            print("Game over: No winner")
             break
 
         current_player = ai_piece if current_player != ai_piece else player_piece

@@ -39,11 +39,10 @@ class Connect4AI:
         if depth == 0:
             return self.evaluate_board(game, self.piece), None
 
-        board_key = tuple(tuple(row) for row in game.board)
-        #delimiter and join
+        board_key = "".join("".join(row) for row in game.board)
         valid_moves = game.get_valid_moves()
 
-        memory_key = (board_key)
+        memory_key = board_key
         best_colm = self.memory.get(memory_key)
         if best_colm is not None:
             valid_moves.remove(best_colm)
@@ -55,8 +54,6 @@ class Connect4AI:
 
             for col in valid_moves:
                 row = game.drop_piece(col, self.piece)
-                if row == -1:
-                    continue
 
                 score, _ = self.minimax(game, depth - 1, False, alpha, beta)
                 game.remove_piece(row, col)
@@ -81,8 +78,6 @@ class Connect4AI:
 
             for col in valid_moves:
                 row = game.drop_piece(col, self.opponent)
-                if row == -1:
-                    continue
 
                 score, _ = self.minimax(game, depth - 1, True, alpha, beta)
                 game.remove_piece(row, col)
@@ -134,6 +129,7 @@ class Connect4AI:
                 best_move = move
             else:
                 break
+        print (_, best_move)
 
         return best_move
 
