@@ -190,12 +190,12 @@ class TestConnect4AI(unittest.TestCase):
             ["X", "_", "_", "_", "_", "_", "_"],
             ["O", "_", "_", "_", "_", "_", "_"],
             ["X", "O", "_", "_", "_", "_", "O"],
-            ["X", "X", "O", "_", "O", "O", "X"],
-            ["O", "X", "O", "_", "O", "X", "O"],
-            ["O", "O", "X", "X", "X", "X", "X"],
+            ["X", "X", "X", "_", "O", "O", "X"],
+            ["O", "X", "O", "_", "X", "X", "O"],
+            ["O", "O", "X", "O", "X", "X", "X"],
         ]
         col = self.ai.best_move(self.game)
-        self.assertEqual(col, 3)
+        self.assertEqual(col, 4)
 
     def test_no_win(self):
         """
