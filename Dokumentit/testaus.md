@@ -3,8 +3,9 @@ Testaus dokumentti
 
 ---
 
-Viimeisin coverage report:
-<img width="1045" height="550" alt="image" src="https://github.com/user-attachments/assets/462d178e-2917-464b-9fcb-d3e4246c4898" />
+Viimeisin coverage report:  
+<img width="722" height="364" alt="kuva" src="https://github.com/user-attachments/assets/8fe8de52-d830-43db-94b2-a00b5cddc95e" />
+
 
 ---
 
@@ -31,9 +32,8 @@ Testeihin kuuluu:
 -Tekoäly löytää välittömät voitot (1 siirto depth=0) itselleen ja vastustajalle ja suosii omaa voittoa  
 -Evaluate window toimii oikein ja antaa oikean arvon 4 nappulan ikkunoille (kaikki yhdistelmät)  
 -Neljä eri tapausta, jotka testaavat evaluate_board toimivan oikein ja palauttavan oikean heuristisen arvon  
+-Kaksi testiä minimaxille, toinen testaa löytääkö minimax syvyydellä 5 taatun voiton ja toinen samaan tapaukseen, kun voittoon 3 siirtoa  
+-Kolme erillistä testiä parhaan liikkeen tekemiseen, jotka varmistavat, että tekoäly tekee parhaan liikkeen (Liikkeet tarkastettu Connect4 solver avulla)  
+-Testi tasapeli tilanteeseen
 
-Tämän hetkinen coverage on: 49%
-
-Puuttuu:  
--Minimax testit  
--Best_move testit  
+Tämän hetkinen coverage on: 100%
