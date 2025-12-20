@@ -12,6 +12,43 @@ class Connect4AI:
         self.time_limit_seconds = time_limit_seconds
         self._start_time = None
 
+    def best_move(self, game):
+        """
+        Method for calling minimax and getting the best move.
+
+        :param game: Current game state
+
+        Returns the best move.
+        """
+        self.memory = {}
+        self._start_time = time.time()
+
+        for col in game.get_valid_moves():
+            row = game.drop_piece(col, self.piece)
+            if game.four_in_a_row(self.piece, last_move=(row, col)):
+                game.remove_piece(row, col)
+                return col
+            game.remove_piece(row, col)
+
+        for col in game.get_valid_moves():
+            row = game.drop_piece(col, self.opponent)
+            if game.four_in_a_row(self.opponent, last_move=(row, col)):
+                game.remove_piece(row, col)
+                return col
+            game.remove_piece(row, col)
+
+        best_move = None
+
+        for depth in range(1, self.depth + 1):
+            _, move = self.minimax(game, depth, True, -100000, 100000)
+            if move is not None:
+                best_move = move
+            else:
+                break
+        print (_, best_move)
+
+        return best_move
+
     def minimax(self, game, depth, maximizing, alpha, beta):
         """
         Minimax algorithm with alpha-beta pruning and time limit.
@@ -95,43 +132,6 @@ class Connect4AI:
 
             self.memory[memory_key] = best_col
             return best_score, best_col
-
-    def best_move(self, game):
-        """
-        Method for calling minimax and getting the best move.
-
-        :param game: Current game state
-
-        Returns the best move.
-        """
-        self.memory = {}
-        self._start_time = time.time()
-
-        for col in game.get_valid_moves():
-            row = game.drop_piece(col, self.piece)
-            if game.four_in_a_row(self.piece, last_move=(row, col)):
-                game.remove_piece(row, col)
-                return col
-            game.remove_piece(row, col)
-
-        for col in game.get_valid_moves():
-            row = game.drop_piece(col, self.opponent)
-            if game.four_in_a_row(self.opponent, last_move=(row, col)):
-                game.remove_piece(row, col)
-                return col
-            game.remove_piece(row, col)
-
-        best_move = None
-
-        for depth in range(1, self.depth + 1):
-            _, move = self.minimax(game, depth, True, -100000, 100000)
-            if move is not None:
-                best_move = move
-            else:
-                break
-        print (_, best_move)
-
-        return best_move
 
     def evaluate_board(self, game, piece):
         """

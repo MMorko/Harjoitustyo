@@ -75,7 +75,7 @@
                     if all(self.board[row - i][col + i] == piece for i in range(4)):
                         return True
             return False
-        
+
         row, col = last_move
         directions = [(0, 1), (1, 0), (1, 1), (1, -1)]
 
@@ -96,9 +96,9 @@
 
             if count >= 4:
                 return True
-            
+
         return False
-    
+
     def get_board(self):
         """
         Returns the current state of the board.
