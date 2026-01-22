@@ -27,14 +27,14 @@ class Connect4AI:
             row = game.drop_piece(col, self.piece)
             if game.four_in_a_row(self.piece, last_move=(row, col)):
                 game.remove_piece(row, col)
-                return col
+                return 100100, col, False
             game.remove_piece(row, col)
 
         for col in game.get_valid_moves():
             row = game.drop_piece(col, self.opponent)
             if game.four_in_a_row(self.opponent, last_move=(row, col)):
                 game.remove_piece(row, col)
-                return col
+                return -100100, col, False
             game.remove_piece(row, col)
 
         best_move = None
@@ -46,8 +46,9 @@ class Connect4AI:
             else:
                 break
         print (_, best_move)
-
-        return best_move
+        if _ == None:
+            return _, best_move, True
+        return _, best_move, False
 
     def minimax(self, game, depth, maximizing, alpha, beta):
         """

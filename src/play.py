@@ -18,7 +18,7 @@ def game_loop():
 
         game.print_board()
         if current_player == ai_piece:
-            column = ai_player.best_move(game)
+            _, column, time_limit = ai_player.best_move(game)
             row = game.drop_piece(column, ai_piece)
             last_move = (row, column)
             print(f"AI chooses column {column + 1}")

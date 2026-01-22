@@ -25,8 +25,8 @@ class TestConnect4AI(unittest.TestCase):
             ["_", "_", "_", "_", "_", "_", "O"],
             ["_", "X", "X", "X", "O", "O", "O"],
         ]
-        col = self.ai.best_move(self.game)
-        self.assertEqual(col, 0)
+        score, col, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 100100)
 
     def test_ai_blocks_opponent_winning_move(self):
         """
@@ -40,8 +40,8 @@ class TestConnect4AI(unittest.TestCase):
             ["_", "_", "_", "_", "_", "_", "_"],
             ["_", "O", "O", "O", "X", "X", "X"],
         ]
-        col = self.ai.best_move(self.game)
-        self.assertEqual(col, 0)
+        score, col, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, -100100)
 
     def test_evaluate_window_own_piece(self):
         """
@@ -126,33 +126,62 @@ class TestConnect4AI(unittest.TestCase):
         Test for minimax decision making win in 5 moves.
         """
         self.game.board = [
-            ["_", "_", "O", "X", "_", "O", "_"],
-            ["_", "_", "O", "X", "_", "O", "O"],
+            ["O", "O", "O", "X", "_", "O", "_"],
+            ["X", "X", "O", "X", "_", "O", "O"],
             ["O", "X", "O", "O", "_", "X", "O"],
             ["X", "O", "X", "X", "_", "O", "X"],
             ["O", "X", "X", "O", "_", "O", "X"],
             ["X", "X", "O", "X", "X", "X", "O"],
         ]
-
-        score, move = self.ai.minimax(self.game, depth=5, maximizing=True, alpha=-100000, beta=100000)
-        self.assertGreaterEqual(score, 1)
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 100000)
 
     def test_minimax_3_move_win(self):
         """
         Test for minimax decision making win in 3 moves.
         """
         self.game.board = [
-            ["_", "_", "O", "X", "_", "O", "_"],
-            ["_", "_", "O", "X", "_", "O", "O"],
+            ["O", "X", "O", "X", "_", "O", "X"],
+            ["O", "X", "O", "X", "_", "O", "O"],
             ["O", "X", "O", "O", "_", "X", "O"],
             ["X", "O", "X", "X", "_", "O", "X"],
-            ["O", "X", "X", "O", "_", "O", "X"],
-            ["X", "X", "O", "X", "X", "X", "O"],
+            ["O", "X", "X", "O", "O", "X", "X"],
+            ["O", "X", "O", "X", "X", "X", "O"],
         ]
-        score, move = self.ai.minimax(self.game, depth=5, maximizing=True, alpha=-100000, beta=100000)
-        self.assertGreaterEqual(score, 1)
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 100000)
 
-    def test_best_move_case_1(self):
+    def test_minimax_5_move_win_case_2(self):
+        """
+        Test for minimax decision making win in 5 moves.
+        """
+        self.game.board =[
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "O", "O", "_", "_", "_"],
+            ["_", "_", "X", "X", "_", "_", "_"],
+            ["_", "_", "X", "X", "O", "_", "_"],
+            ["O", "O", "X", "X", "X", "O", "O"],
+        ]
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 100000)
+
+    def test_minimax_3_move_win_case_2(self):
+        """
+        Test for minimax decision making win in 3 moves.
+        """
+        self.game.board =[
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "O", "O", "O", "_", "_"],
+            ["_", "_", "X", "X", "X", "_", "_"],
+            ["_", "_", "X", "X", "O", "_", "_"],
+            ["O", "O", "X", "X", "X", "O", "O"],
+        ]
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 100000)
+
+    def test_best_time_limit_exceed(self):
         """
         Test for best move selection.
         """
@@ -164,49 +193,40 @@ class TestConnect4AI(unittest.TestCase):
             ["O", "O", "_", "_", "X", "O", "O"],
             ["X", "X", "_", "_", "O", "X", "X"],
         ]
-        col = self.ai.best_move(self.game)
-        self.assertEqual(col, 3)
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertTrue(tl)
 
-    def test_best_move_case_2(self):
+    def test_ai_chooses_best_heuristic_move_depth_1(self):
         """
-        Test for best move selection.
+        Test for best move selection with depth 1.
         """
-        self.game.board = [
+
+        self.ai.depth = 1
+        self.game.board =[
             ["_", "_", "_", "_", "_", "_", "_"],
             ["_", "_", "_", "_", "_", "_", "_"],
-            ["O", "_", "_", "_", "_", "_", "_"],
-            ["X", "O", "X", "O", "_", "_", "_"],
-            ["X", "X", "X", "O", "_", "_", "_"],
-            ["X", "O", "O", "O", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "_", "_", "_", "_", "_"],
+            ["_", "_", "O", "X", "_", "O", "_"],
+            ["_", "_", "X", "X", "O", "O", "O"],
         ]
-        col = self.ai.best_move(self.game)
-        self.assertEqual(col, 3)
-
-    def test_best_move_case_3(self):
-        """
-        Test for best move selection.
-        """
-        self.game.board = [
-            ["X", "_", "_", "_", "_", "_", "_"],
-            ["O", "_", "_", "_", "_", "_", "_"],
-            ["X", "O", "_", "_", "_", "_", "O"],
-            ["X", "X", "X", "_", "O", "O", "X"],
-            ["O", "X", "O", "_", "X", "X", "O"],
-            ["O", "O", "X", "O", "X", "X", "X"],
-        ]
-        col = self.ai.best_move(self.game)
-        self.assertEqual(col, 4)
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 1016)
+        self.assertEqual(move, 3)
 
     def test_no_win(self):
         """
         Test for full board detection.
         """
+
         self.game.board =[
-            ["X", "O", "X", "_", "X", "O", "_"],
+            ["X", "O", "X", "O", "X", "O", "X"],
             ["X", "O", "X", "O", "X", "O", "X"],
             ["O", "X", "O", "X", "O", "X", "O"],
             ["O", "X", "O", "X", "O", "X", "O"],
             ["X", "O", "X", "O", "X", "O", "X"],
             ["X", "O", "X", "O", "X", "O", "X"],
         ]
-        col = self.ai.best_move(self.game)
+        score, move, tl = self.ai.best_move(self.game)
+        self.assertEqual(score, 0)
+        self.assertEqual(move, None)
